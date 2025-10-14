@@ -1,0 +1,563 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXContainerItemProxy section */
+		B66E34F82E9DD038007608C0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B66E34E22E9DD036007608C0 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = B66E34E92E9DD036007608C0;
+			remoteInfo = "Memories for Obsidian";
+		};
+		B66E35022E9DD038007608C0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B66E34E22E9DD036007608C0 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = B66E34E92E9DD036007608C0;
+			remoteInfo = "Memories for Obsidian";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		B66E34EA2E9DD036007608C0 /* Memories for Obsidian.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Memories for Obsidian.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		B66E34F72E9DD038007608C0 /* Memories for ObsidianTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Memories for ObsidianTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		B66E35012E9DD038007608C0 /* Memories for ObsidianUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Memories for ObsidianUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		B66E34EC2E9DD036007608C0 /* Memories for Obsidian */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "Memories for Obsidian";
+			sourceTree = "<group>";
+		};
+		B66E34FA2E9DD038007608C0 /* Memories for ObsidianTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "Memories for ObsidianTests";
+			sourceTree = "<group>";
+		};
+		B66E35042E9DD038007608C0 /* Memories for ObsidianUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "Memories for ObsidianUITests";
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		B66E34E72E9DD036007608C0 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B66E34F42E9DD038007608C0 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B66E34FE2E9DD038007608C0 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		B66E34E12E9DD036007608C0 = {
+			isa = PBXGroup;
+			children = (
+				B66E34EC2E9DD036007608C0 /* Memories for Obsidian */,
+				B66E34FA2E9DD038007608C0 /* Memories for ObsidianTests */,
+				B66E35042E9DD038007608C0 /* Memories for ObsidianUITests */,
+				B66E34EB2E9DD036007608C0 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		B66E34EB2E9DD036007608C0 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				B66E34EA2E9DD036007608C0 /* Memories for Obsidian.app */,
+				B66E34F72E9DD038007608C0 /* Memories for ObsidianTests.xctest */,
+				B66E35012E9DD038007608C0 /* Memories for ObsidianUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		B66E34E92E9DD036007608C0 /* Memories for Obsidian */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B66E350B2E9DD038007608C0 /* Build configuration list for PBXNativeTarget "Memories for Obsidian" */;
+			buildPhases = (
+				B66E34E62E9DD036007608C0 /* Sources */,
+				B66E34E72E9DD036007608C0 /* Frameworks */,
+				B66E34E82E9DD036007608C0 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				B66E34EC2E9DD036007608C0 /* Memories for Obsidian */,
+			);
+			name = "Memories for Obsidian";
+			packageProductDependencies = (
+			);
+			productName = "Memories for Obsidian";
+			productReference = B66E34EA2E9DD036007608C0 /* Memories for Obsidian.app */;
+			productType = "com.apple.product-type.application";
+		};
+		B66E34F62E9DD038007608C0 /* Memories for ObsidianTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B66E350E2E9DD038007608C0 /* Build configuration list for PBXNativeTarget "Memories for ObsidianTests" */;
+			buildPhases = (
+				B66E34F32E9DD038007608C0 /* Sources */,
+				B66E34F42E9DD038007608C0 /* Frameworks */,
+				B66E34F52E9DD038007608C0 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				B66E34F92E9DD038007608C0 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				B66E34FA2E9DD038007608C0 /* Memories for ObsidianTests */,
+			);
+			name = "Memories for ObsidianTests";
+			packageProductDependencies = (
+			);
+			productName = "Memories for ObsidianTests";
+			productReference = B66E34F72E9DD038007608C0 /* Memories for ObsidianTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		B66E35002E9DD038007608C0 /* Memories for ObsidianUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B66E35112E9DD038007608C0 /* Build configuration list for PBXNativeTarget "Memories for ObsidianUITests" */;
+			buildPhases = (
+				B66E34FD2E9DD038007608C0 /* Sources */,
+				B66E34FE2E9DD038007608C0 /* Frameworks */,
+				B66E34FF2E9DD038007608C0 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				B66E35032E9DD038007608C0 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				B66E35042E9DD038007608C0 /* Memories for ObsidianUITests */,
+			);
+			name = "Memories for ObsidianUITests";
+			packageProductDependencies = (
+			);
+			productName = "Memories for ObsidianUITests";
+			productReference = B66E35012E9DD038007608C0 /* Memories for ObsidianUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		B66E34E22E9DD036007608C0 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1640;
+				LastUpgradeCheck = 1640;
+				TargetAttributes = {
+					B66E34E92E9DD036007608C0 = {
+						CreatedOnToolsVersion = 16.4;
+					};
+					B66E34F62E9DD038007608C0 = {
+						CreatedOnToolsVersion = 16.4;
+						TestTargetID = B66E34E92E9DD036007608C0;
+					};
+					B66E35002E9DD038007608C0 = {
+						CreatedOnToolsVersion = 16.4;
+						TestTargetID = B66E34E92E9DD036007608C0;
+					};
+				};
+			};
+			buildConfigurationList = B66E34E52E9DD036007608C0 /* Build configuration list for PBXProject "Memories for Obsidian" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = B66E34E12E9DD036007608C0;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = B66E34EB2E9DD036007608C0 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				B66E34E92E9DD036007608C0 /* Memories for Obsidian */,
+				B66E34F62E9DD038007608C0 /* Memories for ObsidianTests */,
+				B66E35002E9DD038007608C0 /* Memories for ObsidianUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		B66E34E82E9DD036007608C0 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B66E34F52E9DD038007608C0 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B66E34FF2E9DD038007608C0 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		B66E34E62E9DD036007608C0 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B66E34F32E9DD038007608C0 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B66E34FD2E9DD038007608C0 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		B66E34F92E9DD038007608C0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = B66E34E92E9DD036007608C0 /* Memories for Obsidian */;
+			targetProxy = B66E34F82E9DD038007608C0 /* PBXContainerItemProxy */;
+		};
+		B66E35032E9DD038007608C0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = B66E34E92E9DD036007608C0 /* Memories for Obsidian */;
+			targetProxy = B66E35022E9DD038007608C0 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		B66E35092E9DD038007608C0 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = SWE6H8G9FB;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		B66E350A2E9DD038007608C0 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = SWE6H8G9FB;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		B66E350C2E9DD038007608C0 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = SWE6H8G9FB;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "fieldnoise.Memories-for-Obsidian";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		B66E350D2E9DD038007608C0 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = SWE6H8G9FB;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "fieldnoise.Memories-for-Obsidian";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		B66E350F2E9DD038007608C0 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = SWE6H8G9FB;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "fieldnoise.Memories-for-ObsidianTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Memories for Obsidian.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Memories for Obsidian";
+			};
+			name = Debug;
+		};
+		B66E35102E9DD038007608C0 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = SWE6H8G9FB;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "fieldnoise.Memories-for-ObsidianTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Memories for Obsidian.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Memories for Obsidian";
+			};
+			name = Release;
+		};
+		B66E35122E9DD038007608C0 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = SWE6H8G9FB;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "fieldnoise.Memories-for-ObsidianUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = "Memories for Obsidian";
+			};
+			name = Debug;
+		};
+		B66E35132E9DD038007608C0 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = SWE6H8G9FB;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "fieldnoise.Memories-for-ObsidianUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = "Memories for Obsidian";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		B66E34E52E9DD036007608C0 /* Build configuration list for PBXProject "Memories for Obsidian" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B66E35092E9DD038007608C0 /* Debug */,
+				B66E350A2E9DD038007608C0 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B66E350B2E9DD038007608C0 /* Build configuration list for PBXNativeTarget "Memories for Obsidian" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B66E350C2E9DD038007608C0 /* Debug */,
+				B66E350D2E9DD038007608C0 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B66E350E2E9DD038007608C0 /* Build configuration list for PBXNativeTarget "Memories for ObsidianTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B66E350F2E9DD038007608C0 /* Debug */,
+				B66E35102E9DD038007608C0 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B66E35112E9DD038007608C0 /* Build configuration list for PBXNativeTarget "Memories for ObsidianUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B66E35122E9DD038007608C0 /* Debug */,
+				B66E35132E9DD038007608C0 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = B66E34E22E9DD036007608C0 /* Project object */;
+}
