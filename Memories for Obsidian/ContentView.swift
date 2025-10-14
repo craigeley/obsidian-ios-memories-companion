@@ -43,6 +43,7 @@ struct MarkdownContent: Identifiable {
 struct ContentView: View {
     @StateObject private var suggestionsManager = JournalingSuggestionsManager()
     @StateObject private var locationManager = LocationManager()
+    @ObservedObject private var settings = AppSettings.shared
     @State private var markdownToExport: MarkdownContent?
     @State private var showAlert = false
     @State private var alertMessage = ""
@@ -54,6 +55,7 @@ struct ContentView: View {
     @State private var showLocationPicker = false
     @State private var selectedLocation: CLLocationCoordinate2D?
     @State private var selectedPlaceName: String?
+    @State private var showSettings = false
 
     var body: some View {
         NavigationView {
@@ -257,6 +259,15 @@ struct ContentView: View {
             }
             .padding()
             .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button(action: {
+                        showSettings = true
+                    }) {
+                        Image(systemName: "gearshape")
+                    }
+                }
+            }
         }
         .sheet(item: $markdownToExport) { markdownWrapper in
             DocumentPicker(markdownContent: markdownWrapper.content, filename: markdownWrapper.filename) { result in
@@ -283,6 +294,9 @@ struct ContentView: View {
                 currentLocation: locationManager.location
             )
         }
+        .sheet(isPresented: $showSettings) {
+            SettingsView()
+        }
     }
 
     private func generateMarkdown(for suggestion: JournalingSuggestion, note: String) async -> String {
@@ -300,18 +314,9 @@ struct ContentView: View {
         let markdown = await generateMarkdown(for: suggestion, note: note)
         print("ContentView: Generated markdown length: \(markdown.count)")
 
-        // Generate filename from suggestion's date
-        let filename: String
-        if let date = suggestion.date?.start {
-            let formatter = DateFormatter()
-            formatter.dateFormat = "yyyyMMddHHmm"
-            filename = "\(formatter.string(from: date)).md"
-        } else {
-            // Fallback to current date if no suggestion date available
-            let formatter = DateFormatter()
-            formatter.dateFormat = "yyyyMMddHHmm"
-            filename = "\(formatter.string(from: Date())).md"
-        }
+        // Generate filename from suggestion's date using settings
+        let date = suggestion.date?.start ?? Date()
+        let filename = settings.generateFilename(for: date)
 
         markdownToExport = MarkdownContent(content: markdown, filename: filename)
     }
@@ -334,10 +339,8 @@ struct ContentView: View {
         let markdown = await MarkdownGenerator.generateManualEntryMarkdown(note: note, date: date, weather: weatherInfo, placeName: placeName)
         print("ContentView: Generated manual entry markdown length: \(markdown.count)")
 
-        // Use selected date/time for filename
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyyMMddHHmm"
-        let filename = "\(formatter.string(from: date)).md"
+        // Use selected date/time for filename using settings
+        let filename = settings.generateFilename(for: date)
 
         markdownToExport = MarkdownContent(content: markdown, filename: filename)
     }
@@ -349,11 +352,30 @@ struct DocumentPicker: UIViewControllerRepresentable {
     let onCompletion: (Result<URL, Error>) -> Void
 
     func makeCoordinator() -> Coordinator {
-        Coordinator(markdownContent: markdownContent, onCompletion: onCompletion)
+        Coordinator(markdownContent: markdownContent, filename: filename, onCompletion: onCompletion)
     }
 
     func makeUIViewController(context: Context) -> UIDocumentPickerViewController {
-        // Create a temporary file with the markdown content
+        // Check if we have a default export folder
+        if let defaultFolderURL = AppSettings.shared.resolveDefaultExportFolder() {
+            // Try to save directly to the default folder
+            if context.coordinator.saveToDefaultFolder(defaultFolderURL) {
+                // If successful, we still need to return a picker, but we'll dismiss it immediately
+                // Create a dummy picker that we'll cancel
+                let tempURL = FileManager.default.temporaryDirectory.appendingPathComponent(filename)
+                let picker = UIDocumentPickerViewController(forExporting: [tempURL], asCopy: true)
+                picker.delegate = context.coordinator
+
+                // Dismiss immediately since we already saved
+                DispatchQueue.main.async {
+                    picker.dismiss(animated: false)
+                }
+
+                return picker
+            }
+        }
+
+        // No default folder or save failed - show the picker
         let tempURL = FileManager.default.temporaryDirectory.appendingPathComponent(filename)
 
         print("DocumentPicker: About to write markdown of length: \(markdownContent.count)")
@@ -381,11 +403,34 @@ struct DocumentPicker: UIViewControllerRepresentable {
 
     class Coordinator: NSObject, UIDocumentPickerDelegate {
         let markdownContent: String
+        let filename: String
         let onCompletion: (Result<URL, Error>) -> Void
 
-        init(markdownContent: String, onCompletion: @escaping (Result<URL, Error>) -> Void) {
+        init(markdownContent: String, filename: String, onCompletion: @escaping (Result<URL, Error>) -> Void) {
             self.markdownContent = markdownContent
+            self.filename = filename
             self.onCompletion = onCompletion
+        }
+
+        func saveToDefaultFolder(_ folderURL: URL) -> Bool {
+            guard folderURL.startAccessingSecurityScopedResource() else {
+                print("Failed to access security-scoped resource")
+                return false
+            }
+
+            defer { folderURL.stopAccessingSecurityScopedResource() }
+
+            let fileURL = folderURL.appendingPathComponent(filename)
+
+            do {
+                try markdownContent.write(to: fileURL, atomically: true, encoding: .utf8)
+                print("Successfully saved to default folder: \(fileURL.path)")
+                onCompletion(.success(fileURL))
+                return true
+            } catch {
+                print("Failed to save to default folder: \(error)")
+                return false
+            }
         }
 
         func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {

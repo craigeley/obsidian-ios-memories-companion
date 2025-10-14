@@ -30,7 +30,8 @@ struct MarkdownGenerator {
 
         // Collect all tags, places, and weather from all suggestions
         var allTags = Set<String>()
-        allTags.insert("memories")
+        // Add default tags from settings
+        allTags.formUnion(AppSettings.shared.defaultTags)
         var allPlaces: [String] = []
         var weatherInfo: WeatherInfo?
 
@@ -121,11 +122,15 @@ struct MarkdownGenerator {
             markdown += "temp: \(weather.temperature)\n"
         }
 
-        markdown += "tags:\n"
-        markdown += "  - memories\n"
-        markdown += "  - manual\n"
+        // Add tags from settings
+        var tags = Set<String>(AppSettings.shared.manualEntryTags)
         if placeName != nil {
-            markdown += "  - location\n"
+            tags.insert("location")
+        }
+
+        markdown += "tags:\n"
+        for tag in tags.sorted() {
+            markdown += "  - \(tag)\n"
         }
         markdown += "---\n\n"
 
