@@ -101,6 +101,54 @@ struct MarkdownGenerator {
         #endif
     }
 
+    static func generateManualEntryMarkdown(note: String, date: Date, weather: WeatherInfo?, placeName: String?) async -> String {
+        let iso8601Formatter = ISO8601DateFormatter()
+        iso8601Formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        let dateString = iso8601Formatter.string(from: date)
+
+        // Start with YAML frontmatter
+        var markdown = "---\n"
+        markdown += "date_created: \(dateString)\n"
+
+        // Add place if available
+        if let place = placeName {
+            markdown += "place: \"[[\(place)]]\"\n"
+        }
+
+        // Add weather if available
+        if let weather = weather {
+            markdown += "cond: \(weather.condition)\n"
+            markdown += "temp: \(weather.temperature)\n"
+        }
+
+        markdown += "tags:\n"
+        markdown += "  - memories\n"
+        markdown += "  - manual\n"
+        if placeName != nil {
+            markdown += "  - location\n"
+        }
+        markdown += "---\n\n"
+
+        markdown += "# Manual Entry\n\n"
+        markdown += "Date: \(date.formatted(date: .long, time: .shortened))\n"
+
+        // Add place to body if available
+        if let place = placeName {
+            markdown += "📍 \(place)\n"
+        }
+
+        // Add weather to body if available
+        if let weather = weather {
+            markdown += "🌤️ \(weather.condition), \(weather.temperature)°F\n"
+        }
+
+        markdown += "\n---\n\n"
+
+        markdown += note + "\n\n"
+
+        return markdown
+    }
+
     static func saveMarkdownToFile(_ markdown: String, filename: String = "journal_memories.md") -> URL? {
         let fileManager = FileManager.default
 

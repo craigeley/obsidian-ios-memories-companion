@@ -401,6 +401,7 @@
 				DEVELOPMENT_TEAM = SWE6H8G9FB;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Memories-for-Obsidian-Info.plist";
 				INFOPLIST_KEY_NSJournalingSuggestionsUsageDescription = "This app uses journaling suggestions to create markdown files of your memories for use in Obsidian.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -412,6 +413,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
+				NSLocationWhenInUseUsageDescription = "We need your location to provide weather information for your memories";
 				PRODUCT_BUNDLE_IDENTIFIER = "fieldnoise.Memories-for-Obsidian";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -431,6 +433,7 @@
 				DEVELOPMENT_TEAM = SWE6H8G9FB;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Memories-for-Obsidian-Info.plist";
 				INFOPLIST_KEY_NSJournalingSuggestionsUsageDescription = "This app uses journaling suggestions to create markdown files of your memories for use in Obsidian.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -442,6 +445,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
+				NSLocationWhenInUseUsageDescription = "We need your location to provide weather information for your memories";
 				PRODUCT_BUNDLE_IDENTIFIER = "fieldnoise.Memories-for-Obsidian";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;

@@ -31,7 +31,7 @@ class JournalingSuggestionsManager: ObservableObject {
         selectedSuggestion = suggestion
     }
 
-    private func getWeather(for location: CLLocation, date: Date) async -> WeatherInfo? {
+    func getWeatherForLocation(_ location: CLLocation, date: Date) async -> WeatherInfo? {
         do {
             let calendar = Calendar.current
 
@@ -109,7 +109,7 @@ class JournalingSuggestionsManager: ObservableObject {
                         // Fetch weather if we have location and date
                         if weatherInfo == nil, let coordinate = location.location, let memoryDate = suggestion.date?.start {
                             let clLocation = CLLocation(latitude: coordinate.coordinate.latitude, longitude: coordinate.coordinate.longitude)
-                            weatherInfo = await getWeather(for: clLocation, date: memoryDate)
+                            weatherInfo = await getWeatherForLocation(clLocation, date: memoryDate)
 
                             if let weather = weatherInfo {
                                 details += "🌤️ \(weather.condition), \(weather.temperature)°F\n"

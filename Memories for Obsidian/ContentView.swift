@@ -7,9 +7,32 @@
 
 import SwiftUI
 import UniformTypeIdentifiers
+import CoreLocation
+import MapKit
 #if !targetEnvironment(simulator)
 import JournalingSuggestions
 #endif
+
+class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
+    private let manager = CLLocationManager()
+    @Published var location: CLLocation?
+
+    override init() {
+        super.init()
+        manager.delegate = self
+        manager.desiredAccuracy = kCLLocationAccuracyBest
+        manager.requestWhenInUseAuthorization()
+        manager.startUpdatingLocation()
+    }
+
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        location = locations.first
+    }
+
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        print("Location error: \(error)")
+    }
+}
 
 struct MarkdownContent: Identifiable {
     let id = UUID()
@@ -19,12 +42,18 @@ struct MarkdownContent: Identifiable {
 
 struct ContentView: View {
     @StateObject private var suggestionsManager = JournalingSuggestionsManager()
+    @StateObject private var locationManager = LocationManager()
     @State private var markdownToExport: MarkdownContent?
     @State private var showAlert = false
     @State private var alertMessage = ""
     @State private var selectedSuggestion: JournalingSuggestion?
     @State private var userNote: String = ""
     @State private var showNoteInput = false
+    @State private var showManualEntry = false
+    @State private var manualEntryDate = Date()
+    @State private var showLocationPicker = false
+    @State private var selectedLocation: CLLocationCoordinate2D?
+    @State private var selectedPlaceName: String?
 
     var body: some View {
         NavigationView {
@@ -51,7 +80,94 @@ struct ContentView: View {
 
                 Spacer()
 
-                if showNoteInput {
+                if showManualEntry {
+                    VStack(spacing: 15) {
+                        Text("Manual Entry")
+                            .font(.headline)
+
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("Date")
+                                .font(.subheadline)
+                                .foregroundColor(.secondary)
+
+                            DatePicker("", selection: $manualEntryDate, displayedComponents: [.date, .hourAndMinute])
+                                .datePickerStyle(.compact)
+                                .labelsHidden()
+                        }
+                        .padding(.horizontal)
+
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("Location (optional)")
+                                .font(.subheadline)
+                                .foregroundColor(.secondary)
+
+                            Button(action: {
+                                showLocationPicker = true
+                            }) {
+                                HStack {
+                                    Image(systemName: "location.circle")
+                                    if let placeName = selectedPlaceName {
+                                        Text(placeName)
+                                    } else {
+                                        Text("Choose Location")
+                                    }
+                                    Spacer()
+                                    Image(systemName: "chevron.right")
+                                }
+                                .padding()
+                                .background(Color(UIColor.systemGray6))
+                                .cornerRadius(8)
+                            }
+                            .foregroundColor(.primary)
+                        }
+                        .padding(.horizontal)
+
+                        TextEditor(text: $userNote)
+                            .frame(height: 120)
+                            .padding(8)
+                            .background(Color(UIColor.systemGray6))
+                            .cornerRadius(8)
+                            .padding(.horizontal)
+
+                        HStack(spacing: 15) {
+                            Button(action: {
+                                showManualEntry = false
+                                userNote = ""
+                                manualEntryDate = Date()
+                                selectedLocation = nil
+                                selectedPlaceName = nil
+                            }) {
+                                Text("Cancel")
+                                    .font(.headline)
+                                    .frame(maxWidth: .infinity)
+                                    .padding()
+                                    .background(Color.gray)
+                                    .foregroundColor(.white)
+                                    .cornerRadius(10)
+                            }
+
+                            Button(action: {
+                                Task { @MainActor in
+                                    await exportManualEntry(note: userNote, date: manualEntryDate, location: selectedLocation, placeName: selectedPlaceName)
+                                    showManualEntry = false
+                                    userNote = ""
+                                    manualEntryDate = Date()
+                                    selectedLocation = nil
+                                    selectedPlaceName = nil
+                                }
+                            }) {
+                                Text("Export")
+                                    .font(.headline)
+                                    .frame(maxWidth: .infinity)
+                                    .padding()
+                                    .background(Color.green)
+                                    .foregroundColor(.white)
+                                    .cornerRadius(10)
+                            }
+                        }
+                        .padding(.horizontal)
+                    }
+                } else if showNoteInput {
                     VStack(spacing: 15) {
                         Text("Add a note (optional)")
                             .font(.headline)
@@ -99,27 +215,42 @@ struct ContentView: View {
                         .padding(.horizontal)
                     }
                 } else {
-                    #if !targetEnvironment(simulator)
-                    JournalingSuggestionsPicker {
-                        Label("Select Memory", systemImage: "sparkles")
-                            .font(.headline)
-                            .frame(maxWidth: .infinity)
+                    VStack(spacing: 15) {
+                        #if !targetEnvironment(simulator)
+                        JournalingSuggestionsPicker {
+                            Label("Select Memory", systemImage: "sparkles")
+                                .font(.headline)
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .background(Color.blue)
+                                .foregroundColor(.white)
+                                .cornerRadius(10)
+                        } onCompletion: { suggestion in
+                            selectedSuggestion = suggestion
+                            showNoteInput = true
+                        }
+                        .padding(.horizontal)
+                        #else
+                        Text("JournalingSuggestions API is only available on physical devices")
+                            .font(.caption)
+                            .foregroundColor(.orange)
+                            .multilineTextAlignment(.center)
                             .padding()
-                            .background(Color.blue)
-                            .foregroundColor(.white)
-                            .cornerRadius(10)
-                    } onCompletion: { suggestion in
-                        selectedSuggestion = suggestion
-                        showNoteInput = true
+                        #endif
+
+                        Button(action: {
+                            showManualEntry = true
+                        }) {
+                            Label("Manual Entry", systemImage: "pencil")
+                                .font(.headline)
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .background(Color.purple)
+                                .foregroundColor(.white)
+                                .cornerRadius(10)
+                        }
+                        .padding(.horizontal)
                     }
-                    .padding(.horizontal)
-                    #else
-                    Text("JournalingSuggestions API is only available on physical devices")
-                        .font(.caption)
-                        .foregroundColor(.orange)
-                        .multilineTextAlignment(.center)
-                        .padding()
-                    #endif
                 }
 
                 Spacer()
@@ -144,6 +275,13 @@ struct ContentView: View {
             Button("OK", role: .cancel) { }
         } message: {
             Text(alertMessage)
+        }
+        .sheet(isPresented: $showLocationPicker) {
+            LocationPickerView(
+                selectedLocation: $selectedLocation,
+                selectedPlaceName: $selectedPlaceName,
+                currentLocation: locationManager.location
+            )
         }
     }
 
@@ -174,6 +312,32 @@ struct ContentView: View {
             formatter.dateFormat = "yyyyMMddHHmm"
             filename = "\(formatter.string(from: Date())).md"
         }
+
+        markdownToExport = MarkdownContent(content: markdown, filename: filename)
+    }
+
+    private func exportManualEntry(note: String, date: Date, location: CLLocationCoordinate2D?, placeName: String?) async {
+        // Get weather - use selected location if available, otherwise use current location
+        var weatherInfo: WeatherInfo?
+        let weatherLocation: CLLocation?
+
+        if let coord = location {
+            weatherLocation = CLLocation(latitude: coord.latitude, longitude: coord.longitude)
+        } else {
+            weatherLocation = locationManager.location
+        }
+
+        if let loc = weatherLocation {
+            weatherInfo = await suggestionsManager.getWeatherForLocation(loc, date: date)
+        }
+
+        let markdown = await MarkdownGenerator.generateManualEntryMarkdown(note: note, date: date, weather: weatherInfo, placeName: placeName)
+        print("ContentView: Generated manual entry markdown length: \(markdown.count)")
+
+        // Use selected date/time for filename
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyyMMddHHmm"
+        let filename = "\(formatter.string(from: date)).md"
 
         markdownToExport = MarkdownContent(content: markdown, filename: filename)
     }
@@ -235,6 +399,117 @@ struct DocumentPicker: UIViewControllerRepresentable {
 
         func handleError(_ error: Error) {
             onCompletion(.failure(error))
+        }
+    }
+}
+
+struct IdentifiableMapItem: Identifiable {
+    let id = UUID()
+    let mapItem: MKMapItem
+}
+
+struct LocationPickerView: View {
+    @Binding var selectedLocation: CLLocationCoordinate2D?
+    @Binding var selectedPlaceName: String?
+    let currentLocation: CLLocation?
+    @Environment(\.dismiss) var dismiss
+    @State private var searchText = ""
+    @State private var searchResults: [IdentifiableMapItem] = []
+    @State private var region: MKCoordinateRegion
+
+    init(selectedLocation: Binding<CLLocationCoordinate2D?>, selectedPlaceName: Binding<String?>, currentLocation: CLLocation?) {
+        self._selectedLocation = selectedLocation
+        self._selectedPlaceName = selectedPlaceName
+        self.currentLocation = currentLocation
+
+        // Initialize region with current location or default to San Francisco
+        if let location = currentLocation {
+            _region = State(initialValue: MKCoordinateRegion(
+                center: location.coordinate,
+                span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
+            ))
+        } else {
+            _region = State(initialValue: MKCoordinateRegion(
+                center: CLLocationCoordinate2D(latitude: 37.7749, longitude: -122.4194),
+                span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
+            ))
+        }
+    }
+
+    var body: some View {
+        NavigationView {
+            VStack {
+                Map(position: .constant(.region(region))) {
+                    // Show user's current location
+                    if let location = currentLocation {
+                        Marker("Current Location", systemImage: "location.fill", coordinate: location.coordinate)
+                            .tint(.blue)
+                    }
+
+                    // Show search results
+                    ForEach(searchResults) { item in
+                        Marker(item.mapItem.name ?? "Location", coordinate: item.mapItem.placemark.coordinate)
+                            .tint(.red)
+                    }
+                }
+                .mapControls {
+                    MapUserLocationButton()
+                    MapCompass()
+                }
+                .frame(height: 300)
+
+                List(searchResults) { item in
+                    Button(action: {
+                        selectedLocation = item.mapItem.placemark.coordinate
+                        selectedPlaceName = item.mapItem.name
+                        dismiss()
+                    }) {
+                        VStack(alignment: .leading) {
+                            Text(item.mapItem.name ?? "Unknown")
+                                .font(.headline)
+                            if let address = item.mapItem.placemark.title {
+                                Text(address)
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                        }
+                    }
+                }
+                .searchable(text: $searchText, prompt: "Search for a place")
+                .onChange(of: searchText) { oldValue, newValue in
+                    searchPlaces(query: newValue)
+                }
+            }
+            .navigationTitle("Choose Location")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") {
+                        dismiss()
+                    }
+                }
+            }
+        }
+    }
+
+    private func searchPlaces(query: String) {
+        guard !query.isEmpty else {
+            searchResults = []
+            return
+        }
+
+        let request = MKLocalSearch.Request()
+        request.naturalLanguageQuery = query
+        request.region = region
+
+        let search = MKLocalSearch(request: request)
+        search.start { response, error in
+            if let response = response {
+                searchResults = response.mapItems.map { IdentifiableMapItem(mapItem: $0) }
+                if let firstItem = response.mapItems.first {
+                    region.center = firstItem.placemark.coordinate
+                }
+            }
         }
     }
 }
