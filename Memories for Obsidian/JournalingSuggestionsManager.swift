@@ -133,23 +133,23 @@ class JournalingSuggestionsManager: ObservableObject {
                 if let workout = try? await item.content(forType: JournalingSuggestion.Workout.self) {
                     details += "💪 Workout"
 
-                    // Try to access workout properties
+                    // Try to access workout details
                     var workoutDetails: [String] = []
 
-                    // Try to get duration
-                    if let duration = workout.workout.duration {
-                        let minutes = Int(duration / 60)
-                        workoutDetails.append("\(minutes) min")
+                    // Access details through the details property
+                    if let distance = workout.details?.distance {
+                        let miles = distance.doubleValue(for: .mile())
+                        if miles >= 0.1 {
+                            workoutDetails.append(String(format: "%.1f mi", miles))
+                        }
                     }
 
-                    // Try to get calories
-                    if let energy = workout.workout.totalEnergyBurned {
+                    if let energy = workout.details?.activeEnergyBurned {
                         let calories = Int(energy.doubleValue(for: .kilocalorie()))
                         workoutDetails.append("\(calories) cal")
                     }
 
-                    // Try to get average heart rate
-                    if let heartRate = workout.averageHeartRate {
+                    if let heartRate = workout.details?.averageHeartRate {
                         let bpm = Int(heartRate.doubleValue(for: .count().unitDivided(by: .minute())))
                         workoutDetails.append("\(bpm) bpm")
                     }
@@ -159,6 +159,19 @@ class JournalingSuggestionsManager: ObservableObject {
                     }
 
                     details += "\n"
+
+                    // Try to get weather from workout route location
+                    if weatherInfo == nil, let route = workout.route, !route.isEmpty, let memoryDate = suggestion.date?.start {
+                        // Get the first location from the route
+                        let firstLocation = route.first!
+                        let clLocation = CLLocation(latitude: firstLocation.coordinate.latitude, longitude: firstLocation.coordinate.longitude)
+                        weatherInfo = await getWeatherForLocation(clLocation, date: memoryDate)
+
+                        if let weather = weatherInfo {
+                            details += "🌤️ \(weather.condition), \(weather.temperature)°F\n"
+                        }
+                    }
+
                     tags.insert("workout")
                 }
             }
@@ -188,11 +201,26 @@ class JournalingSuggestionsManager: ObservableObject {
 
             // Try to get song content
             if item.hasContent(ofType: JournalingSuggestion.Song.self) {
-                if let song = try? await item.content(forType: JournalingSuggestion.Song.self) {
-                    details += "🎵 \(song.song.title)"
-                    if let artist = song.song.artist {
+                if let songContent = try? await item.content(forType: JournalingSuggestion.Song.self) {
+                    details += "🎵 "
+
+                    // Try to get song title
+                    if let song = songContent.song {
+                        details += song
+                    } else {
+                        details += "Song"
+                    }
+
+                    // Try to get artist
+                    if let artist = songContent.artist {
                         details += " by \(artist)"
                     }
+
+                    // Try to get album
+                    if let album = songContent.album {
+                        details += " (\(album))"
+                    }
+
                     details += "\n"
                     tags.insert("music")
                 }
@@ -200,12 +228,8 @@ class JournalingSuggestionsManager: ObservableObject {
 
             // Try to get motion activity content
             if item.hasContent(ofType: JournalingSuggestion.MotionActivity.self) {
-                if let activity = try? await item.content(forType: JournalingSuggestion.MotionActivity.self) {
-                    details += "🏃 \(activity.activityType)"
-                    if activity.stepCount > 0 {
-                        details += " (\(activity.stepCount) steps)"
-                    }
-                    details += "\n"
+                if let _ = try? await item.content(forType: JournalingSuggestion.MotionActivity.self) {
+                    details += "🏃 Activity\n"
                     tags.insert("activity")
                 }
             }
@@ -213,8 +237,7 @@ class JournalingSuggestionsManager: ObservableObject {
             // Try to get state of mind content
             if item.hasContent(ofType: JournalingSuggestion.StateOfMind.self) {
                 if let stateOfMind = try? await item.content(forType: JournalingSuggestion.StateOfMind.self) {
-                    details += "🧠 State of Mind"
-                    // StateOfMind includes valence and labels
+                    details += "🧠 State of Mind: \(stateOfMind.state)"
                     details += "\n"
                     tags.insert("mental-health")
                 }
@@ -223,10 +246,20 @@ class JournalingSuggestionsManager: ObservableObject {
             // Try to get podcast content
             if item.hasContent(ofType: JournalingSuggestion.Podcast.self) {
                 if let podcast = try? await item.content(forType: JournalingSuggestion.Podcast.self) {
-                    details += "🎙️ \(podcast.episode.title)"
-                    if let show = podcast.episode.show {
+                    details += "🎙️ "
+
+                    // Try to get episode title
+                    if let episode = podcast.episode {
+                        details += episode
+                    } else {
+                        details += "Podcast"
+                    }
+
+                    // Try to get show name
+                    if let show = podcast.show {
                         details += " (\(show))"
                     }
+
                     details += "\n"
                     tags.insert("podcast")
                 }

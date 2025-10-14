@@ -356,13 +356,21 @@ struct DocumentPicker: UIViewControllerRepresentable {
     }
 
     func makeUIViewController(context: Context) -> UIDocumentPickerViewController {
+        // Always create the temp file first
+        let tempURL = FileManager.default.temporaryDirectory.appendingPathComponent(filename)
+
+        do {
+            try markdownContent.write(to: tempURL, atomically: true, encoding: .utf8)
+        } catch {
+            print("DocumentPicker: Error writing temp file: \(error)")
+            context.coordinator.handleError(error)
+        }
+
         // Check if we have a default export folder
         if let defaultFolderURL = AppSettings.shared.resolveDefaultExportFolder() {
             // Try to save directly to the default folder
             if context.coordinator.saveToDefaultFolder(defaultFolderURL) {
-                // If successful, we still need to return a picker, but we'll dismiss it immediately
-                // Create a dummy picker that we'll cancel
-                let tempURL = FileManager.default.temporaryDirectory.appendingPathComponent(filename)
+                // If successful, we still need to return a picker
                 let picker = UIDocumentPickerViewController(forExporting: [tempURL], asCopy: true)
                 picker.delegate = context.coordinator
 
@@ -376,7 +384,6 @@ struct DocumentPicker: UIViewControllerRepresentable {
         }
 
         // No default folder or save failed - show the picker
-        let tempURL = FileManager.default.temporaryDirectory.appendingPathComponent(filename)
 
         print("DocumentPicker: About to write markdown of length: \(markdownContent.count)")
         print("DocumentPicker: Content preview: \(String(markdownContent.prefix(200)))")
