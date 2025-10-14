@@ -13,7 +13,6 @@ import Foundation
 struct MarkdownGenerator {
     static func generateMarkdown(from suggestions: [JournalingSuggestion], suggestionsManager: JournalingSuggestionsManager, userNote: String = "") async -> String {
         #if !targetEnvironment(simulator)
-        print("MarkdownGenerator: Starting generation for \(suggestions.count) suggestions")
 
         // Get the date from the first suggestion for frontmatter
         let frontmatterDate: Date
@@ -23,9 +22,10 @@ struct MarkdownGenerator {
             frontmatterDate = Date()
         }
 
-        // Create ISO8601 formatter for YAML frontmatter
+        // Create ISO8601 formatter for YAML frontmatter (local time)
         let iso8601Formatter = ISO8601DateFormatter()
         iso8601Formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        iso8601Formatter.timeZone = TimeZone.current
         let dateString = iso8601Formatter.string(from: frontmatterDate)
 
         // Collect all tags, places, weather, and content details from all suggestions
@@ -45,9 +45,7 @@ struct MarkdownGenerator {
 
         var detailsContent = ""
         for (index, suggestion) in suggestions.enumerated() {
-            print("MarkdownGenerator: Processing suggestion \(index + 1)")
             let result = await suggestionsManager.getSuggestionDetails(for: suggestion)
-            print("MarkdownGenerator: Details length for suggestion \(index + 1): \(result.details.count)")
             detailsContent += result.details
             detailsContent += "---\n\n"
             allTags.formUnion(result.tags)
@@ -206,7 +204,6 @@ struct MarkdownGenerator {
             markdown += userNote + "\n\n"
         }
 
-        print("MarkdownGenerator: Final markdown length: \(markdown.count)")
         return markdown
         #else
         var markdown = "# Journal Memories (Simulator Mode)\n\n"
@@ -220,6 +217,7 @@ struct MarkdownGenerator {
     static func generateManualEntryMarkdown(note: String, date: Date, weather: WeatherInfo?, placeName: String?) async -> String {
         let iso8601Formatter = ISO8601DateFormatter()
         iso8601Formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        iso8601Formatter.timeZone = TimeZone.current
         let dateString = iso8601Formatter.string(from: date)
 
         // Start with YAML frontmatter

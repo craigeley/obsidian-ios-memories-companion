@@ -140,11 +140,8 @@ class JournalingSuggestionsManager: ObservableObject {
             // Create a time range: 1 hour before to 1 hour after the memory date
             guard let startDate = calendar.date(byAdding: .hour, value: -1, to: date),
                   let endDate = calendar.date(byAdding: .hour, value: 1, to: date) else {
-                print("Failed to create date range for weather")
                 return nil
             }
-
-            print("WeatherKit: Fetching weather for date range: \(startDate) to \(endDate)")
 
             let weather = try await weatherService.weather(for: location, including: .daily(startDate: startDate, endDate: endDate))
 
@@ -162,15 +159,11 @@ class JournalingSuggestionsManager: ObservableObject {
                     condition: condition,
                     symbolName: symbolName
                 )
-            } else {
-                print("WeatherKit: No weather data returned")
             }
         } catch let error as NSError {
             // Silently handle WeatherKit authentication errors
             // This allows the app to work without WeatherKit properly configured
-            if error.domain == "WeatherDaemon.WDSJWTAuthenticatorServiceListener.Errors" {
-                print("WeatherKit not configured - skipping weather data")
-            } else {
+            if error.domain != "WeatherDaemon.WDSJWTAuthenticatorServiceListener.Errors" {
                 print("Error fetching weather: \(error)")
             }
         } catch {
@@ -313,15 +306,8 @@ class JournalingSuggestionsManager: ObservableObject {
 
             // Try to get photo content
             if item.hasContent(ofType: JournalingSuggestion.Photo.self) {
-                if let photo = try? await item.content(forType: JournalingSuggestion.Photo.self) {
-                    details += "📷 Photo"
-
-                    // Try to access photo properties
-                    // The Photo type should have an asset property that we can use
-                    print("Photo object: \(photo)")
-                    print("Photo type: \(type(of: photo))")
-
-                    details += "\n"
+                if let _ = try? await item.content(forType: JournalingSuggestion.Photo.self) {
+                    details += "📷 Photo\n"
                     tags.insert("photo")
                     photoCount += 1
                 }
