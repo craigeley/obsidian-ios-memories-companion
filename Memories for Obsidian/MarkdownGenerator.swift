@@ -79,10 +79,6 @@ struct MarkdownGenerator {
         }
         markdown += "---\n\n"
 
-        markdown += "# Journal Memories\n\n"
-        markdown += "Generated: \(Date().formatted(date: .long, time: .shortened))\n\n"
-        markdown += "---\n\n"
-
         markdown += detailsContent
 
         // Add user note if provided

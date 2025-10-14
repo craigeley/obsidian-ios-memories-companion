@@ -9,6 +9,7 @@ import Foundation
 import SwiftUI
 import WeatherKit
 import CoreLocation
+import HealthKit
 #if !targetEnvironment(simulator)
 @preconcurrency import JournalingSuggestions
 #endif
@@ -129,8 +130,35 @@ class JournalingSuggestionsManager: ObservableObject {
 
             // Try to get workout content
             if item.hasContent(ofType: JournalingSuggestion.Workout.self) {
-                if let _ = try? await item.content(forType: JournalingSuggestion.Workout.self) {
-                    details += "💪 Workout\n"
+                if let workout = try? await item.content(forType: JournalingSuggestion.Workout.self) {
+                    details += "💪 Workout"
+
+                    // Try to access workout properties
+                    var workoutDetails: [String] = []
+
+                    // Try to get duration
+                    if let duration = workout.workout.duration {
+                        let minutes = Int(duration / 60)
+                        workoutDetails.append("\(minutes) min")
+                    }
+
+                    // Try to get calories
+                    if let energy = workout.workout.totalEnergyBurned {
+                        let calories = Int(energy.doubleValue(for: .kilocalorie()))
+                        workoutDetails.append("\(calories) cal")
+                    }
+
+                    // Try to get average heart rate
+                    if let heartRate = workout.averageHeartRate {
+                        let bpm = Int(heartRate.doubleValue(for: .count().unitDivided(by: .minute())))
+                        workoutDetails.append("\(bpm) bpm")
+                    }
+
+                    if !workoutDetails.isEmpty {
+                        details += " (\(workoutDetails.joined(separator: ", ")))"
+                    }
+
+                    details += "\n"
                     tags.insert("workout")
                 }
             }
@@ -145,9 +173,62 @@ class JournalingSuggestionsManager: ObservableObject {
 
             // Try to get photo content
             if item.hasContent(ofType: JournalingSuggestion.Photo.self) {
-                if (try? await item.content(forType: JournalingSuggestion.Photo.self)) != nil {
-                    details += "📷 Photo\n"
+                if let photo = try? await item.content(forType: JournalingSuggestion.Photo.self) {
+                    details += "📷 Photo"
+
+                    // Try to access photo properties
+                    // The Photo type should have an asset property that we can use
+                    print("Photo object: \(photo)")
+                    print("Photo type: \(type(of: photo))")
+
+                    details += "\n"
                     tags.insert("photo")
+                }
+            }
+
+            // Try to get song content
+            if item.hasContent(ofType: JournalingSuggestion.Song.self) {
+                if let song = try? await item.content(forType: JournalingSuggestion.Song.self) {
+                    details += "🎵 \(song.song.title)"
+                    if let artist = song.song.artist {
+                        details += " by \(artist)"
+                    }
+                    details += "\n"
+                    tags.insert("music")
+                }
+            }
+
+            // Try to get motion activity content
+            if item.hasContent(ofType: JournalingSuggestion.MotionActivity.self) {
+                if let activity = try? await item.content(forType: JournalingSuggestion.MotionActivity.self) {
+                    details += "🏃 \(activity.activityType)"
+                    if activity.stepCount > 0 {
+                        details += " (\(activity.stepCount) steps)"
+                    }
+                    details += "\n"
+                    tags.insert("activity")
+                }
+            }
+
+            // Try to get state of mind content
+            if item.hasContent(ofType: JournalingSuggestion.StateOfMind.self) {
+                if let stateOfMind = try? await item.content(forType: JournalingSuggestion.StateOfMind.self) {
+                    details += "🧠 State of Mind"
+                    // StateOfMind includes valence and labels
+                    details += "\n"
+                    tags.insert("mental-health")
+                }
+            }
+
+            // Try to get podcast content
+            if item.hasContent(ofType: JournalingSuggestion.Podcast.self) {
+                if let podcast = try? await item.content(forType: JournalingSuggestion.Podcast.self) {
+                    details += "🎙️ \(podcast.episode.title)"
+                    if let show = podcast.episode.show {
+                        details += " (\(show))"
+                    }
+                    details += "\n"
+                    tags.insert("podcast")
                 }
             }
         }
