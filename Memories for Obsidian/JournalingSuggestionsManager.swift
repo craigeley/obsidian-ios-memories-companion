@@ -20,6 +20,107 @@ struct WeatherInfo {
     let symbolName: String
 }
 
+struct WorkoutData {
+    let activityType: String
+    let distance: Double?
+    let calories: Int?
+    let heartRate: Int?
+}
+
+struct SongData {
+    let title: String?
+    let artist: String?
+    let album: String?
+}
+
+struct PodcastData {
+    let episode: String?
+    let show: String?
+}
+
+struct PhotoData {
+    let count: Int
+}
+
+struct ContactData {
+    let names: [String]
+}
+
+struct ReflectionData {
+    let prompts: [String]
+}
+
+struct StateOfMindData {
+    let state: String
+}
+
+struct ActivityData {
+    let count: Int
+}
+
+struct SuggestionDetailsResult {
+    let details: String
+    let tags: Set<String>
+    let places: [String]
+    let weather: WeatherInfo?
+    let workouts: [WorkoutData]
+    let songs: [SongData]
+    let podcasts: [PodcastData]
+    let photos: PhotoData?
+    let contacts: ContactData?
+    let reflections: ReflectionData?
+    let stateOfMind: StateOfMindData?
+    let activity: ActivityData?
+}
+
+extension HKWorkoutActivityType {
+    var name: String {
+        switch self {
+        case .running: return "Running"
+        case .walking: return "Walking"
+        case .cycling: return "Cycling"
+        case .hiking: return "Hiking"
+        case .swimming: return "Swimming"
+        case .yoga: return "Yoga"
+        case .functionalStrengthTraining: return "Strength Training"
+        case .traditionalStrengthTraining: return "Strength Training"
+        case .elliptical: return "Elliptical"
+        case .rowing: return "Rowing"
+        case .stairClimbing: return "Stair Climbing"
+        case .cardioDance: return "Dancing"
+        case .golf: return "Golf"
+        case .tennis: return "Tennis"
+        case .basketball: return "Basketball"
+        case .soccer: return "Soccer"
+        case .baseball: return "Baseball"
+        case .americanFootball: return "Football"
+        case .hockey: return "Hockey"
+        case .lacrosse: return "Lacrosse"
+        case .volleyball: return "Volleyball"
+        case .boxing: return "Boxing"
+        case .kickboxing: return "Kickboxing"
+        case .martialArts: return "Martial Arts"
+        case .pilates: return "Pilates"
+        case .coreTraining: return "Core Training"
+        case .crossTraining: return "Cross Training"
+        case .flexibility: return "Flexibility"
+        case .cooldown: return "Cooldown"
+        case .wheelchairRunPace: return "Wheelchair Run"
+        case .wheelchairWalkPace: return "Wheelchair Walk"
+        case .handCycling: return "Hand Cycling"
+        case .downhillSkiing: return "Skiing"
+        case .snowboarding: return "Snowboarding"
+        case .skatingSports: return "Skating"
+        case .paddleSports: return "Paddle Sports"
+        case .surfingSports: return "Surfing"
+        case .swimBikeRun: return "Triathlon"
+        case .other: return "Workout"
+        case .archery: return "Archery"
+        @unknown default: return "Workout"
+        }
+    }
+}
+
 @MainActor
 class JournalingSuggestionsManager: ObservableObject {
     @Published var selectedSuggestion: JournalingSuggestion?
@@ -79,11 +180,19 @@ class JournalingSuggestionsManager: ObservableObject {
     }
 
     #if !targetEnvironment(simulator)
-    func getSuggestionDetails(for suggestion: JournalingSuggestion) async -> (details: String, tags: Set<String>, places: [String], weather: WeatherInfo?) {
+    func getSuggestionDetails(for suggestion: JournalingSuggestion) async -> SuggestionDetailsResult {
         var details = ""
         var tags = Set<String>()
         var places: [String] = []
         var weatherInfo: WeatherInfo?
+        var workouts: [WorkoutData] = []
+        var songs: [SongData] = []
+        var podcasts: [PodcastData] = []
+        var photoCount = 0
+        var contactNames: [String] = []
+        var reflectionPrompts: [String] = []
+        var stateOfMindValue: String?
+        var activityCount = 0
 
         // Get the title
         details += "# \(suggestion.title)\n\n"
@@ -125,34 +234,51 @@ class JournalingSuggestionsManager: ObservableObject {
                 if let reflection = try? await item.content(forType: JournalingSuggestion.Reflection.self) {
                     details += "💭 \(reflection.prompt)\n"
                     tags.insert("reflection")
+                    reflectionPrompts.append(reflection.prompt)
                 }
             }
 
             // Try to get workout content
             if item.hasContent(ofType: JournalingSuggestion.Workout.self) {
                 if let workout = try? await item.content(forType: JournalingSuggestion.Workout.self) {
-                    details += "💪 Workout"
+                    // Get activity type name from details
+                    let activityName = workout.details?.activityType.name ?? "Workout"
+                    details += "💪 \(activityName)"
 
                     // Try to access workout details
                     var workoutDetails: [String] = []
+                    var distanceMiles: Double? = nil
+                    var caloriesValue: Int? = nil
+                    var heartRateValue: Int? = nil
 
                     // Access details through the details property
                     if let distance = workout.details?.distance {
                         let miles = distance.doubleValue(for: .mile())
                         if miles >= 0.1 {
+                            distanceMiles = miles
                             workoutDetails.append(String(format: "%.1f mi", miles))
                         }
                     }
 
                     if let energy = workout.details?.activeEnergyBurned {
                         let calories = Int(energy.doubleValue(for: .kilocalorie()))
+                        caloriesValue = calories
                         workoutDetails.append("\(calories) cal")
                     }
 
                     if let heartRate = workout.details?.averageHeartRate {
                         let bpm = Int(heartRate.doubleValue(for: .count().unitDivided(by: .minute())))
+                        heartRateValue = bpm
                         workoutDetails.append("\(bpm) bpm")
                     }
+
+                    // Store workout data
+                    workouts.append(WorkoutData(
+                        activityType: activityName,
+                        distance: distanceMiles,
+                        calories: caloriesValue,
+                        heartRate: heartRateValue
+                    ))
 
                     if !workoutDetails.isEmpty {
                         details += " (\(workoutDetails.joined(separator: ", ")))"
@@ -181,6 +307,7 @@ class JournalingSuggestionsManager: ObservableObject {
                 if let contact = try? await item.content(forType: JournalingSuggestion.Contact.self) {
                     details += "👤 \(contact.name)\n"
                     tags.insert("contact")
+                    contactNames.append(contact.name)
                 }
             }
 
@@ -196,6 +323,7 @@ class JournalingSuggestionsManager: ObservableObject {
 
                     details += "\n"
                     tags.insert("photo")
+                    photoCount += 1
                 }
             }
 
@@ -221,6 +349,13 @@ class JournalingSuggestionsManager: ObservableObject {
                         details += " (\(album))"
                     }
 
+                    // Store song data
+                    songs.append(SongData(
+                        title: songContent.song,
+                        artist: songContent.artist,
+                        album: songContent.album
+                    ))
+
                     details += "\n"
                     tags.insert("music")
                 }
@@ -231,15 +366,18 @@ class JournalingSuggestionsManager: ObservableObject {
                 if let _ = try? await item.content(forType: JournalingSuggestion.MotionActivity.self) {
                     details += "🏃 Activity\n"
                     tags.insert("activity")
+                    activityCount += 1
                 }
             }
 
             // Try to get state of mind content
             if item.hasContent(ofType: JournalingSuggestion.StateOfMind.self) {
                 if let stateOfMind = try? await item.content(forType: JournalingSuggestion.StateOfMind.self) {
-                    details += "🧠 State of Mind: \(stateOfMind.state)"
+                    let stateString = "\(stateOfMind.state)"
+                    details += "🧠 State of Mind: \(stateString)"
                     details += "\n"
                     tags.insert("mental-health")
+                    stateOfMindValue = stateString
                 }
             }
 
@@ -260,6 +398,12 @@ class JournalingSuggestionsManager: ObservableObject {
                         details += " (\(show))"
                     }
 
+                    // Store podcast data
+                    podcasts.append(PodcastData(
+                        episode: podcast.episode,
+                        show: podcast.show
+                    ))
+
                     details += "\n"
                     tags.insert("podcast")
                 }
@@ -268,7 +412,20 @@ class JournalingSuggestionsManager: ObservableObject {
 
         details += "\n"
 
-        return (details, tags, places, weatherInfo)
+        return SuggestionDetailsResult(
+            details: details,
+            tags: tags,
+            places: places,
+            weather: weatherInfo,
+            workouts: workouts,
+            songs: songs,
+            podcasts: podcasts,
+            photos: photoCount > 0 ? PhotoData(count: photoCount) : nil,
+            contacts: !contactNames.isEmpty ? ContactData(names: contactNames) : nil,
+            reflections: !reflectionPrompts.isEmpty ? ReflectionData(prompts: reflectionPrompts) : nil,
+            stateOfMind: stateOfMindValue != nil ? StateOfMindData(state: stateOfMindValue!) : nil,
+            activity: activityCount > 0 ? ActivityData(count: activityCount) : nil
+        )
     }
     #endif
 }

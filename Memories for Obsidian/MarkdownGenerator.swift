@@ -28,12 +28,20 @@ struct MarkdownGenerator {
         iso8601Formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
         let dateString = iso8601Formatter.string(from: frontmatterDate)
 
-        // Collect all tags, places, and weather from all suggestions
+        // Collect all tags, places, weather, and content details from all suggestions
         var allTags = Set<String>()
         // Add default tags from settings
         allTags.formUnion(AppSettings.shared.defaultTags)
         var allPlaces: [String] = []
         var weatherInfo: WeatherInfo?
+        var allWorkouts: [WorkoutData] = []
+        var allSongs: [SongData] = []
+        var allPodcasts: [PodcastData] = []
+        var allPhotoCount = 0
+        var allContactNames: [String] = []
+        var allReflectionPrompts: [String] = []
+        var stateOfMindValue: String?
+        var allActivityCount = 0
 
         var detailsContent = ""
         for (index, suggestion) in suggestions.enumerated() {
@@ -48,6 +56,26 @@ struct MarkdownGenerator {
             // Use weather from first suggestion that has it
             if weatherInfo == nil, let weather = result.weather {
                 weatherInfo = weather
+            }
+
+            // Collect structured data from all suggestions
+            allWorkouts.append(contentsOf: result.workouts)
+            allSongs.append(contentsOf: result.songs)
+            allPodcasts.append(contentsOf: result.podcasts)
+            if let photos = result.photos {
+                allPhotoCount += photos.count
+            }
+            if let contacts = result.contacts {
+                allContactNames.append(contentsOf: contacts.names)
+            }
+            if let reflections = result.reflections {
+                allReflectionPrompts.append(contentsOf: reflections.prompts)
+            }
+            if stateOfMindValue == nil, let stateOfMind = result.stateOfMind {
+                stateOfMindValue = stateOfMind.state
+            }
+            if let activity = result.activity {
+                allActivityCount += activity.count
             }
         }
 
@@ -71,6 +99,97 @@ struct MarkdownGenerator {
         if let weather = weatherInfo {
             markdown += "cond: \(weather.condition)\n"
             markdown += "temp: \(weather.temperature)\n"
+        }
+
+        // Add workout details if enabled
+        if AppSettings.shared.includeWorkoutInFrontmatter && !allWorkouts.isEmpty {
+            if allWorkouts.count == 1 {
+                let workout = allWorkouts[0]
+                markdown += "workout: \(workout.activityType.lowercased())\n"
+                if let distance = workout.distance {
+                    markdown += "distance: \(String(format: "%.1f", distance))\n"
+                }
+                if let calories = workout.calories {
+                    markdown += "calories: \(calories)\n"
+                }
+                if let hr = workout.heartRate {
+                    markdown += "hr: \(hr)\n"
+                }
+            } else {
+                markdown += "workouts:\n"
+                for workout in allWorkouts {
+                    markdown += "  - activity: \(workout.activityType.lowercased())\n"
+                    if let distance = workout.distance {
+                        markdown += "    distance: \(String(format: "%.1f", distance))\n"
+                    }
+                    if let calories = workout.calories {
+                        markdown += "    calories: \(calories)\n"
+                    }
+                    if let hr = workout.heartRate {
+                        markdown += "    hr: \(hr)\n"
+                    }
+                }
+            }
+        }
+
+        // Add song details if enabled
+        if AppSettings.shared.includeSongInFrontmatter && !allSongs.isEmpty {
+            markdown += "songs:\n"
+            for song in allSongs {
+                if let title = song.title {
+                    markdown += "  - title: \"\(title)\"\n"
+                    if let artist = song.artist {
+                        markdown += "    artist: \"\(artist)\"\n"
+                    }
+                    if let album = song.album {
+                        markdown += "    album: \"\(album)\"\n"
+                    }
+                }
+            }
+        }
+
+        // Add podcast details if enabled
+        if AppSettings.shared.includePodcastInFrontmatter && !allPodcasts.isEmpty {
+            markdown += "podcasts:\n"
+            for podcast in allPodcasts {
+                if let episode = podcast.episode {
+                    markdown += "  - episode: \"\(episode)\"\n"
+                    if let show = podcast.show {
+                        markdown += "    show: \"\(show)\"\n"
+                    }
+                }
+            }
+        }
+
+        // Add photo count if enabled
+        if AppSettings.shared.includePhotoInFrontmatter && allPhotoCount > 0 {
+            markdown += "photos: \(allPhotoCount)\n"
+        }
+
+        // Add contacts if enabled
+        if AppSettings.shared.includeContactInFrontmatter && !allContactNames.isEmpty {
+            markdown += "contacts:\n"
+            for name in allContactNames {
+                markdown += "  - \"\(name)\"\n"
+            }
+        }
+
+        // Add reflections if enabled
+        if AppSettings.shared.includeReflectionInFrontmatter && !allReflectionPrompts.isEmpty {
+            markdown += "reflections:\n"
+            for prompt in allReflectionPrompts {
+                markdown += "  - \"\(prompt)\"\n"
+            }
+        }
+
+        // Add state of mind if enabled
+        if AppSettings.shared.includeStateOfMindInFrontmatter, let state = stateOfMindValue {
+            markdown += "state_of_mind: \"\(state)\"\n"
+        }
+
+        // Add activity count if enabled
+        if AppSettings.shared.includeActivityInFrontmatter && allActivityCount > 0 {
+            markdown += "activities: \(allActivityCount)\n"
         }
 
         markdown += "tags:\n"

@@ -96,6 +96,55 @@ class AppSettings: ObservableObject {
         }
     }
 
+    // YAML Frontmatter toggles for content types
+    @Published var includeWorkoutInFrontmatter: Bool {
+        didSet {
+            UserDefaults.standard.set(includeWorkoutInFrontmatter, forKey: "includeWorkoutInFrontmatter")
+        }
+    }
+
+    @Published var includeSongInFrontmatter: Bool {
+        didSet {
+            UserDefaults.standard.set(includeSongInFrontmatter, forKey: "includeSongInFrontmatter")
+        }
+    }
+
+    @Published var includePodcastInFrontmatter: Bool {
+        didSet {
+            UserDefaults.standard.set(includePodcastInFrontmatter, forKey: "includePodcastInFrontmatter")
+        }
+    }
+
+    @Published var includePhotoInFrontmatter: Bool {
+        didSet {
+            UserDefaults.standard.set(includePhotoInFrontmatter, forKey: "includePhotoInFrontmatter")
+        }
+    }
+
+    @Published var includeContactInFrontmatter: Bool {
+        didSet {
+            UserDefaults.standard.set(includeContactInFrontmatter, forKey: "includeContactInFrontmatter")
+        }
+    }
+
+    @Published var includeReflectionInFrontmatter: Bool {
+        didSet {
+            UserDefaults.standard.set(includeReflectionInFrontmatter, forKey: "includeReflectionInFrontmatter")
+        }
+    }
+
+    @Published var includeStateOfMindInFrontmatter: Bool {
+        didSet {
+            UserDefaults.standard.set(includeStateOfMindInFrontmatter, forKey: "includeStateOfMindInFrontmatter")
+        }
+    }
+
+    @Published var includeActivityInFrontmatter: Bool {
+        didSet {
+            UserDefaults.standard.set(includeActivityInFrontmatter, forKey: "includeActivityInFrontmatter")
+        }
+    }
+
     init() {
         if let savedFormat = UserDefaults.standard.string(forKey: "fileNamingFormat"),
            let format = FileNamingFormat(rawValue: savedFormat) {
@@ -118,6 +167,16 @@ class AppSettings: ObservableObject {
 
         self.defaultExportFolderBookmark = UserDefaults.standard.data(forKey: "defaultExportFolderBookmark")
         self.defaultExportFolderName = UserDefaults.standard.string(forKey: "defaultExportFolderName")
+
+        // Initialize frontmatter toggles (default to false)
+        self.includeWorkoutInFrontmatter = UserDefaults.standard.bool(forKey: "includeWorkoutInFrontmatter")
+        self.includeSongInFrontmatter = UserDefaults.standard.bool(forKey: "includeSongInFrontmatter")
+        self.includePodcastInFrontmatter = UserDefaults.standard.bool(forKey: "includePodcastInFrontmatter")
+        self.includePhotoInFrontmatter = UserDefaults.standard.bool(forKey: "includePhotoInFrontmatter")
+        self.includeContactInFrontmatter = UserDefaults.standard.bool(forKey: "includeContactInFrontmatter")
+        self.includeReflectionInFrontmatter = UserDefaults.standard.bool(forKey: "includeReflectionInFrontmatter")
+        self.includeStateOfMindInFrontmatter = UserDefaults.standard.bool(forKey: "includeStateOfMindInFrontmatter")
+        self.includeActivityInFrontmatter = UserDefaults.standard.bool(forKey: "includeActivityInFrontmatter")
     }
 
     func resolveDefaultExportFolder() -> URL? {
@@ -313,6 +372,23 @@ struct SettingsView: View {
 
                 Section {
                     Text("Tags will be included in the YAML frontmatter of exported markdown files. System tags like 'location', 'photo', etc. will be added automatically based on content.")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+
+                Section(header: Text("YAML Frontmatter Details")) {
+                    Toggle("Workout Details", isOn: $settings.includeWorkoutInFrontmatter)
+                    Toggle("Song Details", isOn: $settings.includeSongInFrontmatter)
+                    Toggle("Podcast Details", isOn: $settings.includePodcastInFrontmatter)
+                    Toggle("Photo Details", isOn: $settings.includePhotoInFrontmatter)
+                    Toggle("Contact Details", isOn: $settings.includeContactInFrontmatter)
+                    Toggle("Reflection Details", isOn: $settings.includeReflectionInFrontmatter)
+                    Toggle("State of Mind Details", isOn: $settings.includeStateOfMindInFrontmatter)
+                    Toggle("Activity Details", isOn: $settings.includeActivityInFrontmatter)
+                }
+
+                Section {
+                    Text("When enabled, detailed information for each content type will be stored in the YAML frontmatter. For example, workouts will include activity type, distance, calories, and heart rate.")
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
