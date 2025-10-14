@@ -4,11 +4,18 @@ An iOS app that uses Apple's Journaling Suggestions API to fetch personal memori
 
 ## Features
 
-- Fetches journaling suggestions from the past 7 days
+- Fetches journaling suggestions from the native iOS picker
 - Includes various types of memories: photos, locations, workouts, contacts, media, and more
 - Exports memories as markdown files
-- Easy sharing to Obsidian or other apps via iOS share sheet
+- Easy sharing to Obsidian or other apps via iOS Files app
 - Privacy-focused: Only selected memories are shared with the app
+
+## Screenshots
+![](https://github.com/craigeley/obsidian-ios-memories-companion/blob/main/screenshots/shot_01.png)
+
+![](https://github.com/craigeley/obsidian-ios-memories-companion/blob/main/screenshots/shot_02.png)
+
+![](https://github.com/craigeley/obsidian-ios-memories-companion/blob/main/screenshots/shot_03.png)
 
 ## Requirements
 
