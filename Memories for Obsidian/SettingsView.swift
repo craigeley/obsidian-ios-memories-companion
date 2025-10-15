@@ -9,10 +9,10 @@ import SwiftUI
 
 enum FileNamingFormat: String, CaseIterable, Identifiable {
     case iso8601Compact = "yyyyMMddHHmm"
-    case iso8601Readable = "yyyy-MM-dd HH:mm"
+    case iso8601Readable = "yyyy-MM-dd HH.mm"
     case dateOnly = "yyyy-MM-dd"
     case timestamp = "timestamp"
-    case descriptive = "Memory - yyyy-MM-dd HH:mm"
+    case descriptive = "Memory - yyyy-MM-dd HH.mm"
 
     var id: String { self.rawValue }
 
@@ -21,13 +21,13 @@ enum FileNamingFormat: String, CaseIterable, Identifiable {
         case .iso8601Compact:
             return "ISO 8601 Compact (202510131430)"
         case .iso8601Readable:
-            return "ISO 8601 Readable (2025-10-13 14:30)"
+            return "ISO 8601 Readable (2025-10-13 14.30)"
         case .dateOnly:
             return "Date Only (2025-10-13)"
         case .timestamp:
             return "Unix Timestamp (1728835800)"
         case .descriptive:
-            return "Descriptive (Memory - 2025-10-13 14:30)"
+            return "Descriptive (Memory - 2025-10-13 14.30)"
         }
     }
 
@@ -40,7 +40,7 @@ enum FileNamingFormat: String, CaseIterable, Identifiable {
             formatter.dateFormat = "yyyyMMddHHmm"
             return "\(formatter.string(from: date)).md"
         case .iso8601Readable:
-            formatter.dateFormat = "yyyy-MM-dd HH:mm"
+            formatter.dateFormat = "yyyy-MM-dd HH.mm"
             return "\(formatter.string(from: date)).md"
         case .dateOnly:
             formatter.dateFormat = "yyyy-MM-dd"
@@ -49,7 +49,7 @@ enum FileNamingFormat: String, CaseIterable, Identifiable {
             let timestamp = Int(date.timeIntervalSince1970)
             return "\(timestamp).md"
         case .descriptive:
-            formatter.dateFormat = "yyyy-MM-dd HH:mm"
+            formatter.dateFormat = "yyyy-MM-dd HH.mm"
             return "Memory - \(formatter.string(from: date)).md"
         }
     }
