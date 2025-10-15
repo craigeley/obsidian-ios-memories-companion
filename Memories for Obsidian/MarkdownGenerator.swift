@@ -200,7 +200,6 @@ struct MarkdownGenerator {
 
         // Add user note if provided
         if !userNote.isEmpty {
-            markdown += "## Notes\n\n"
             markdown += userNote + "\n\n"
         }
 
@@ -247,7 +246,7 @@ struct MarkdownGenerator {
         }
         markdown += "---\n\n"
 
-        markdown += "# Manual Entry\n\n"
+        markdown += "### Manual Entry\n\n"
         markdown += "Date: \(date.formatted(date: .long, time: .shortened))\n"
 
         // Add place to body if available

@@ -188,7 +188,7 @@ class JournalingSuggestionsManager: ObservableObject {
         var activityCount = 0
 
         // Get the title
-        details += "# \(suggestion.title)\n\n"
+        details += "### \(suggestion.title)\n\n"
 
         // Get the date
         if let date = suggestion.date {
