@@ -581,7 +581,11 @@ struct LocationPickerView: View {
             if let response = response {
                 searchResults = response.mapItems.map { IdentifiableMapItem(mapItem: $0) }
                 if let firstItem = response.mapItems.first {
-                    region.center = firstItem.placemark.coordinate
+                    let coordinate = firstItem.placemark.coordinate
+                    // Validate coordinate before using it
+                    if CLLocationCoordinate2DIsValid(coordinate) {
+                        region.center = coordinate
+                    }
                 }
             }
         }
