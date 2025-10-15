@@ -208,7 +208,7 @@ class AppSettings: ObservableObject {
             formatter.dateFormat = "yyyyMMddHHmm"
             return "\(formatter.string(from: date)).md"
         case .iso8601Readable:
-            formatter.dateFormat = "yyyy-MM-dd HH:mm"
+            formatter.dateFormat = "yyyy-MM-dd HH.mm"
             return "\(formatter.string(from: date)).md"
         case .dateOnly:
             formatter.dateFormat = "yyyy-MM-dd"
@@ -217,7 +217,7 @@ class AppSettings: ObservableObject {
             let timestamp = Int(date.timeIntervalSince1970)
             return "\(timestamp).md"
         case .descriptive:
-            formatter.dateFormat = "yyyy-MM-dd HH:mm"
+            formatter.dateFormat = "yyyy-MM-dd HH.mm"
             return "Memory - \(formatter.string(from: date)).md"
         }
     }
