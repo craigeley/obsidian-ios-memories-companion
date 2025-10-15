@@ -44,7 +44,7 @@ struct MarkdownGenerator {
         var allActivityCount = 0
 
         var detailsContent = ""
-        for (index, suggestion) in suggestions.enumerated() {
+        for (_, suggestion) in suggestions.enumerated() {
             let result = await suggestionsManager.getSuggestionDetails(for: suggestion)
             detailsContent += result.details
             detailsContent += "---\n\n"
