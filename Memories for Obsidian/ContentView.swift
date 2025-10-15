@@ -86,138 +86,144 @@ struct ContentView: View {
                 Spacer()
 
                 if showManualEntry {
-                    VStack(spacing: 15) {
-                        Text("Manual Entry")
-                            .font(.headline)
+                    ScrollView {
+                        VStack(spacing: 15) {
+                            Text("Manual Entry")
+                                .font(.headline)
 
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text("Date")
-                                .font(.subheadline)
-                                .foregroundColor(.secondary)
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text("Date")
+                                    .font(.subheadline)
+                                    .foregroundColor(.secondary)
 
-                            DatePicker("", selection: $manualEntryDate, displayedComponents: [.date, .hourAndMinute])
-                                .datePickerStyle(.compact)
-                                .labelsHidden()
-                        }
-                        .padding(.horizontal)
-
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text("Location (optional)")
-                                .font(.subheadline)
-                                .foregroundColor(.secondary)
-
-                            Button(action: {
-                                showLocationPicker = true
-                            }) {
-                                HStack {
-                                    Image(systemName: "location.circle")
-                                    if let placeName = selectedPlaceName {
-                                        Text(placeName)
-                                    } else {
-                                        Text("Choose Location")
-                                    }
-                                    Spacer()
-                                    Image(systemName: "chevron.right")
-                                }
-                                .padding()
-                                .background(Color(UIColor.systemGray6))
-                                .cornerRadius(8)
+                                DatePicker("", selection: $manualEntryDate, displayedComponents: [.date, .hourAndMinute])
+                                    .datePickerStyle(.compact)
+                                    .labelsHidden()
                             }
-                            .foregroundColor(.primary)
-                        }
-                        .padding(.horizontal)
-
-                        TextEditor(text: $userNote)
-                            .frame(height: 120)
-                            .padding(8)
-                            .background(Color(UIColor.systemGray6))
-                            .cornerRadius(8)
                             .padding(.horizontal)
 
-                        HStack(spacing: 15) {
-                            Button(action: {
-                                showManualEntry = false
-                                userNote = ""
-                                manualEntryDate = Date()
-                                selectedLocation = nil
-                                selectedPlaceName = nil
-                            }) {
-                                Text("Cancel")
-                                    .font(.headline)
-                                    .frame(maxWidth: .infinity)
-                                    .padding()
-                                    .background(Color.gray)
-                                    .foregroundColor(.white)
-                                    .cornerRadius(10)
-                            }
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text("Location (optional)")
+                                    .font(.subheadline)
+                                    .foregroundColor(.secondary)
 
-                            Button(action: {
-                                Task { @MainActor in
-                                    await exportManualEntry(note: userNote, date: manualEntryDate, location: selectedLocation, placeName: selectedPlaceName)
+                                Button(action: {
+                                    showLocationPicker = true
+                                }) {
+                                    HStack {
+                                        Image(systemName: "location.circle")
+                                        if let placeName = selectedPlaceName {
+                                            Text(placeName)
+                                        } else {
+                                            Text("Choose Location")
+                                        }
+                                        Spacer()
+                                        Image(systemName: "chevron.right")
+                                    }
+                                    .padding()
+                                    .background(Color(UIColor.systemGray6))
+                                    .cornerRadius(8)
+                                }
+                                .foregroundColor(.primary)
+                            }
+                            .padding(.horizontal)
+
+                            TextEditor(text: $userNote)
+                                .frame(height: 120)
+                                .padding(8)
+                                .background(Color(UIColor.systemGray6))
+                                .cornerRadius(8)
+                                .padding(.horizontal)
+
+                            HStack(spacing: 15) {
+                                Button(action: {
                                     showManualEntry = false
                                     userNote = ""
                                     manualEntryDate = Date()
                                     selectedLocation = nil
                                     selectedPlaceName = nil
+                                }) {
+                                    Text("Cancel")
+                                        .font(.headline)
+                                        .frame(maxWidth: .infinity)
+                                        .padding()
+                                        .background(Color.gray)
+                                        .foregroundColor(.white)
+                                        .cornerRadius(10)
                                 }
-                            }) {
-                                Text("Export")
-                                    .font(.headline)
-                                    .frame(maxWidth: .infinity)
-                                    .padding()
-                                    .background(Color.green)
-                                    .foregroundColor(.white)
-                                    .cornerRadius(10)
+
+                                Button(action: {
+                                    Task { @MainActor in
+                                        await exportManualEntry(note: userNote, date: manualEntryDate, location: selectedLocation, placeName: selectedPlaceName)
+                                        showManualEntry = false
+                                        userNote = ""
+                                        manualEntryDate = Date()
+                                        selectedLocation = nil
+                                        selectedPlaceName = nil
+                                    }
+                                }) {
+                                    Text("Export")
+                                        .font(.headline)
+                                        .frame(maxWidth: .infinity)
+                                        .padding()
+                                        .background(Color.green)
+                                        .foregroundColor(.white)
+                                        .cornerRadius(10)
+                                }
                             }
+                            .padding(.horizontal)
+                            .padding(.bottom, 20)
                         }
-                        .padding(.horizontal)
                     }
                 } else if showNoteInput {
-                    VStack(spacing: 15) {
-                        Text("Add a note (optional)")
-                            .font(.headline)
+                    ScrollView {
+                        VStack(spacing: 15) {
+                            Text("Add a note (optional)")
+                                .font(.headline)
 
-                        TextEditor(text: $userNote)
-                            .frame(height: 120)
-                            .padding(8)
-                            .background(Color(UIColor.systemGray6))
-                            .cornerRadius(8)
-                            .padding(.horizontal)
+                            TextEditor(text: $userNote)
+                                .frame(height: 120)
+                                .padding(8)
+                                .background(Color(UIColor.systemGray6))
+                                .cornerRadius(8)
+                                .padding(.horizontal)
 
-                        HStack(spacing: 15) {
-                            Button(action: {
-                                showNoteInput = false
-                                selectedSuggestion = nil
-                                userNote = ""
-                            }) {
-                                Text("Cancel")
-                                    .font(.headline)
-                                    .frame(maxWidth: .infinity)
-                                    .padding()
-                                    .background(Color.gray)
-                                    .foregroundColor(.white)
-                                    .cornerRadius(10)
-                            }
-
-                            Button(action: {
-                                Task { @MainActor in
-                                    if let suggestion = selectedSuggestion {
-                                        await exportMemory(suggestion: suggestion, note: userNote)
-                                    }
+                            HStack(spacing: 15) {
+                                Button(action: {
                                     showNoteInput = false
+                                    selectedSuggestion = nil
                                     userNote = ""
+                                }) {
+                                    Text("Cancel")
+                                        .font(.headline)
+                                        .frame(maxWidth: .infinity)
+                                        .padding()
+                                        .background(Color.gray)
+                                        .foregroundColor(.white)
+                                        .cornerRadius(10)
                                 }
-                            }) {
-                                Text("Export")
-                                    .font(.headline)
-                                    .frame(maxWidth: .infinity)
-                                    .padding()
-                                    .background(Color.green)
-                                    .foregroundColor(.white)
-                                    .cornerRadius(10)
+
+                                Button(action: {
+                                    Task { @MainActor in
+                                        if let suggestion = selectedSuggestion {
+                                            await exportMemory(suggestion: suggestion, note: userNote)
+                                        }
+                                        showNoteInput = false
+                                        userNote = ""
+                                    }
+                                }) {
+                                    Text("Export")
+                                        .font(.headline)
+                                        .frame(maxWidth: .infinity)
+                                        .padding()
+                                        .background(Color.green)
+                                        .foregroundColor(.white)
+                                        .cornerRadius(10)
+                                }
                             }
+                            .padding(.horizontal)
+                            .padding(.bottom, 20)
                         }
-                        .padding(.horizontal)
                     }
                 } else {
                     VStack(spacing: 15) {
@@ -490,6 +496,7 @@ struct LocationPickerView: View {
     @State private var searchText = ""
     @State private var searchResults: [IdentifiableMapItem] = []
     @State private var region: MKCoordinateRegion
+    @State private var currentLocationItem: IdentifiableMapItem?
 
     init(selectedLocation: Binding<CLLocationCoordinate2D?>, selectedPlaceName: Binding<String?>, currentLocation: CLLocation?) {
         self._selectedLocation = selectedLocation
@@ -532,19 +539,53 @@ struct LocationPickerView: View {
                 }
                 .frame(height: 300)
 
-                List(searchResults) { item in
-                    Button(action: {
-                        selectedLocation = item.mapItem.placemark.coordinate
-                        selectedPlaceName = item.mapItem.name
-                        dismiss()
-                    }) {
-                        VStack(alignment: .leading) {
-                            Text(item.mapItem.name ?? "Unknown")
-                                .font(.headline)
-                            if let address = item.mapItem.placemark.title {
-                                Text(address)
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
+                List {
+                    // Show current location option if available
+                    if let currentItem = currentLocationItem {
+                        Section(header: Text("Current Location")) {
+                            Button(action: {
+                                selectedLocation = currentItem.mapItem.placemark.coordinate
+                                selectedPlaceName = currentItem.mapItem.name
+                                dismiss()
+                            }) {
+                                HStack {
+                                    Image(systemName: "location.fill")
+                                        .foregroundColor(.blue)
+                                    VStack(alignment: .leading) {
+                                        Text(currentItem.mapItem.name ?? "Current Location")
+                                            .font(.headline)
+                                        if let address = currentItem.mapItem.placemark.title {
+                                            Text(address)
+                                                .font(.caption)
+                                                .foregroundColor(.secondary)
+                                        }
+                                    }
+                                }
+                            }
+                            .foregroundColor(.primary)
+                        }
+                    }
+
+                    // Show search results
+                    if !searchResults.isEmpty {
+                        Section(header: Text("Search Results")) {
+                            ForEach(searchResults) { item in
+                                Button(action: {
+                                    selectedLocation = item.mapItem.placemark.coordinate
+                                    selectedPlaceName = item.mapItem.name
+                                    dismiss()
+                                }) {
+                                    VStack(alignment: .leading) {
+                                        Text(item.mapItem.name ?? "Unknown")
+                                            .font(.headline)
+                                        if let address = item.mapItem.placemark.title {
+                                            Text(address)
+                                                .font(.caption)
+                                                .foregroundColor(.secondary)
+                                        }
+                                    }
+                                }
+                                .foregroundColor(.primary)
                             }
                         }
                     }
@@ -563,6 +604,34 @@ struct LocationPickerView: View {
                     }
                 }
             }
+            .onAppear {
+                // Reverse geocode current location on appear
+                if let location = currentLocation {
+                    reverseGeocodeCurrentLocation(location)
+                }
+            }
+        }
+    }
+
+    private func reverseGeocodeCurrentLocation(_ location: CLLocation) {
+        let geocoder = CLGeocoder()
+        geocoder.reverseGeocodeLocation(location) { placemarks, error in
+            guard error == nil, let placemark = placemarks?.first else { return }
+
+            // Create a MKPlacemark from CLPlacemark
+            let mkPlacemark = MKPlacemark(placemark: placemark)
+            let mapItem = MKMapItem(placemark: mkPlacemark)
+
+            // Set a name for the location
+            if let name = placemark.name {
+                mapItem.name = name
+            } else if let locality = placemark.locality {
+                mapItem.name = locality
+            } else {
+                mapItem.name = "Current Location"
+            }
+
+            currentLocationItem = IdentifiableMapItem(mapItem: mapItem)
         }
     }
 
