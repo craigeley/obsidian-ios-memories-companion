@@ -136,6 +136,7 @@ struct ContentView: View {
     @State private var showOverwriteConfirmation = false
     @State private var pendingMarkdown: String?
     @State private var pendingFileURL: URL?
+    @State private var showNoteEditor = false
 
     var body: some View {
         NavigationView {
@@ -205,12 +206,32 @@ struct ContentView: View {
                             }
                             .padding(.horizontal)
 
-                            TextEditor(text: $userNote)
-                                .frame(height: 120)
-                                .padding(8)
-                                .background(Color(UIColor.systemGray6))
-                                .cornerRadius(8)
-                                .padding(.horizontal)
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text("Note (optional)")
+                                    .font(.subheadline)
+                                    .foregroundColor(.secondary)
+
+                                Button(action: {
+                                    showNoteEditor = true
+                                }) {
+                                    HStack {
+                                        Image(systemName: "note.text")
+                                        if userNote.isEmpty {
+                                            Text("Add Note")
+                                        } else {
+                                            Text(userNote.prefix(50) + (userNote.count > 50 ? "..." : ""))
+                                                .lineLimit(1)
+                                        }
+                                        Spacer()
+                                        Image(systemName: "chevron.right")
+                                    }
+                                    .padding()
+                                    .background(Color(UIColor.systemGray6))
+                                    .cornerRadius(8)
+                                }
+                                .foregroundColor(.primary)
+                            }
+                            .padding(.horizontal)
 
                             HStack(spacing: 15) {
                                 Button(action: {
@@ -395,6 +416,9 @@ struct ContentView: View {
                 selectedPlaceName: $selectedPlaceName,
                 currentLocation: locationManager.location
             )
+        }
+        .sheet(isPresented: $showNoteEditor) {
+            NoteEditorView(noteText: $userNote)
         }
         .sheet(isPresented: $showSettings) {
             SettingsView()
@@ -796,6 +820,40 @@ struct LocationPickerView: View {
         selectedPlaceName = name
         savedLocationsManager.saveLocation(name: name, coordinate: coordinate)
         dismiss()
+    }
+}
+
+struct NoteEditorView: View {
+    @Binding var noteText: String
+    @Environment(\.dismiss) var dismiss
+    @FocusState private var isTextEditorFocused: Bool
+
+    var body: some View {
+        NavigationView {
+            VStack {
+                TextEditor(text: $noteText)
+                    .focused($isTextEditorFocused)
+                    .padding()
+                    .font(.body)
+            }
+            .navigationTitle("Add Note")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") {
+                        dismiss()
+                    }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Done") {
+                        dismiss()
+                    }
+                }
+            }
+            .onAppear {
+                isTextEditorFocused = true
+            }
+        }
     }
 }
 
