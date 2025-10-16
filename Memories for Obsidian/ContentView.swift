@@ -279,12 +279,28 @@ struct ContentView: View {
                             Text("Add a note (optional)")
                                 .font(.headline)
 
-                            TextEditor(text: $userNote)
-                                .frame(height: 120)
-                                .padding(8)
-                                .background(Color(UIColor.systemGray6))
-                                .cornerRadius(8)
-                                .padding(.horizontal)
+                            VStack(alignment: .leading, spacing: 8) {
+                                Button(action: {
+                                    showNoteEditor = true
+                                }) {
+                                    HStack {
+                                        Image(systemName: "note.text")
+                                        if userNote.isEmpty {
+                                            Text("Add Note")
+                                        } else {
+                                            Text(userNote.prefix(50) + (userNote.count > 50 ? "..." : ""))
+                                                .lineLimit(1)
+                                        }
+                                        Spacer()
+                                        Image(systemName: "chevron.right")
+                                    }
+                                    .padding()
+                                    .background(Color(UIColor.systemGray6))
+                                    .cornerRadius(8)
+                                }
+                                .foregroundColor(.primary)
+                            }
+                            .padding(.horizontal)
 
                             HStack(spacing: 15) {
                                 Button(action: {
