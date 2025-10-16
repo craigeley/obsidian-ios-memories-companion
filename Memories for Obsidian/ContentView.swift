@@ -359,7 +359,8 @@ struct ContentView: View {
             DocumentPicker(markdownContent: markdownWrapper.content, filename: markdownWrapper.filename) { result in
                 switch result {
                 case .success(let url):
-                    alertMessage = "Markdown file saved successfully!\nLocation: \(url.path)"
+                    let displayPath = userFriendlyPath(for: url)
+                    alertMessage = "Markdown file saved successfully!\nLocation: \(displayPath)"
                     showAlert = true
                 case .failure(let error):
                     alertMessage = "Failed to save markdown file: \(error.localizedDescription)"
@@ -499,12 +500,33 @@ struct ContentView: View {
 
         do {
             try markdown.write(to: fileURL, atomically: true, encoding: .utf8)
-            alertMessage = "Markdown file saved successfully!\nLocation: \(fileURL.path)"
+            let displayPath = userFriendlyPath(for: fileURL)
+            alertMessage = "Markdown file saved successfully!\nLocation: \(displayPath)"
             showAlert = true
         } catch {
             alertMessage = "Failed to save markdown file: \(error.localizedDescription)"
             showAlert = true
         }
+    }
+
+    private func userFriendlyPath(for url: URL) -> String {
+        let path = url.path
+
+        // Replace common iOS paths with user-friendly names
+        if path.contains("/com~apple~CloudDocs") {
+            return path.replacingOccurrences(of: "/private/var/mobile/Library/Mobile Documents/com~apple~CloudDocs", with: "iCloud Drive")
+                      .replacingOccurrences(of: "/var/mobile/Library/Mobile Documents/com~apple~CloudDocs", with: "iCloud Drive")
+        } else if path.contains("/Documents") {
+            // On My iPhone/iPad
+            let components = url.pathComponents
+            if let docsIndex = components.firstIndex(of: "Documents") {
+                let remainingPath = components[(docsIndex + 1)...].joined(separator: "/")
+                return "On My iPhone/Documents/\(remainingPath)"
+            }
+        }
+
+        // Fallback to just the filename if we can't make it friendlier
+        return url.lastPathComponent
     }
 }
 
