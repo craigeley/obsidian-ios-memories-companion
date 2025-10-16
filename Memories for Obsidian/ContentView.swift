@@ -34,6 +34,83 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     }
 }
 
+struct SavedLocation: Identifiable, Codable, Equatable {
+    let id: UUID
+    let name: String
+    let latitude: Double
+    let longitude: Double
+    let timestamp: Date
+
+    init(id: UUID = UUID(), name: String, latitude: Double, longitude: Double, timestamp: Date = Date()) {
+        self.id = id
+        self.name = name
+        self.latitude = latitude
+        self.longitude = longitude
+        self.timestamp = timestamp
+    }
+
+    var coordinate: CLLocationCoordinate2D {
+        CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+    }
+}
+
+class SavedLocationsManager: ObservableObject {
+    static let shared = SavedLocationsManager()
+
+    @Published private(set) var savedLocations: [SavedLocation] = []
+    private let userDefaultsKey = "savedLocations"
+    private let maxLocations = 15
+
+    private init() {
+        loadLocations()
+    }
+
+    func saveLocation(name: String, coordinate: CLLocationCoordinate2D) {
+        // Check if this location already exists (by name or very close coordinates)
+        let isDuplicate = savedLocations.contains { location in
+            location.name == name ||
+            (abs(location.latitude - coordinate.latitude) < 0.0001 &&
+             abs(location.longitude - coordinate.longitude) < 0.0001)
+        }
+
+        guard !isDuplicate else { return }
+
+        let newLocation = SavedLocation(
+            name: name,
+            latitude: coordinate.latitude,
+            longitude: coordinate.longitude
+        )
+
+        // Add to the beginning of the array (most recent first)
+        savedLocations.insert(newLocation, at: 0)
+
+        // Keep only the most recent locations
+        if savedLocations.count > maxLocations {
+            savedLocations = Array(savedLocations.prefix(maxLocations))
+        }
+
+        persistLocations()
+    }
+
+    func removeLocation(_ location: SavedLocation) {
+        savedLocations.removeAll { $0.id == location.id }
+        persistLocations()
+    }
+
+    private func loadLocations() {
+        guard let data = UserDefaults.standard.data(forKey: userDefaultsKey),
+              let locations = try? JSONDecoder().decode([SavedLocation].self, from: data) else {
+            return
+        }
+        savedLocations = locations
+    }
+
+    private func persistLocations() {
+        guard let data = try? JSONEncoder().encode(savedLocations) else { return }
+        UserDefaults.standard.set(data, forKey: userDefaultsKey)
+    }
+}
+
 struct MarkdownContent: Identifiable {
     let id = UUID()
     let content: String
@@ -493,6 +570,7 @@ struct LocationPickerView: View {
     @Binding var selectedPlaceName: String?
     let currentLocation: CLLocation?
     @Environment(\.dismiss) var dismiss
+    @ObservedObject private var savedLocationsManager = SavedLocationsManager.shared
     @State private var searchText = ""
     @State private var searchResults: [IdentifiableMapItem] = []
     @State private var region: MKCoordinateRegion
@@ -514,6 +592,22 @@ struct LocationPickerView: View {
                 center: CLLocationCoordinate2D(latitude: 37.7749, longitude: -122.4194),
                 span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
             ))
+        }
+    }
+
+    var sortedSavedLocations: [SavedLocation] {
+        guard let currentLoc = currentLocation else {
+            // If no current location, return sorted by timestamp (most recent first)
+            return savedLocationsManager.savedLocations
+        }
+
+        // Sort by distance from current location
+        return savedLocationsManager.savedLocations.sorted { location1, location2 in
+            let loc1 = CLLocation(latitude: location1.latitude, longitude: location1.longitude)
+            let loc2 = CLLocation(latitude: location2.latitude, longitude: location2.longitude)
+            let distance1 = currentLoc.distance(from: loc1)
+            let distance2 = currentLoc.distance(from: loc2)
+            return distance1 < distance2
         }
     }
 
@@ -544,9 +638,7 @@ struct LocationPickerView: View {
                     if let currentItem = currentLocationItem {
                         Section(header: Text("Current Location")) {
                             Button(action: {
-                                selectedLocation = currentItem.mapItem.placemark.coordinate
-                                selectedPlaceName = currentItem.mapItem.name
-                                dismiss()
+                                selectLocation(coordinate: currentItem.mapItem.placemark.coordinate, name: currentItem.mapItem.name ?? "Current Location")
                             }) {
                                 HStack {
                                     Image(systemName: "location.fill")
@@ -566,14 +658,31 @@ struct LocationPickerView: View {
                         }
                     }
 
+                    // Show saved locations
+                    if !savedLocationsManager.savedLocations.isEmpty {
+                        Section(header: Text("Saved Locations")) {
+                            ForEach(sortedSavedLocations) { location in
+                                Button(action: {
+                                    selectLocation(coordinate: location.coordinate, name: location.name)
+                                }) {
+                                    HStack {
+                                        Image(systemName: "mappin.circle")
+                                            .foregroundColor(.purple)
+                                        Text(location.name)
+                                            .font(.headline)
+                                    }
+                                }
+                                .foregroundColor(.primary)
+                            }
+                        }
+                    }
+
                     // Show search results
                     if !searchResults.isEmpty {
                         Section(header: Text("Search Results")) {
                             ForEach(searchResults) { item in
                                 Button(action: {
-                                    selectedLocation = item.mapItem.placemark.coordinate
-                                    selectedPlaceName = item.mapItem.name
-                                    dismiss()
+                                    selectLocation(coordinate: item.mapItem.placemark.coordinate, name: item.mapItem.name ?? "Unknown")
                                 }) {
                                     VStack(alignment: .leading) {
                                         Text(item.mapItem.name ?? "Unknown")
@@ -658,6 +767,13 @@ struct LocationPickerView: View {
                 }
             }
         }
+    }
+
+    private func selectLocation(coordinate: CLLocationCoordinate2D, name: String) {
+        selectedLocation = coordinate
+        selectedPlaceName = name
+        savedLocationsManager.saveLocation(name: name, coordinate: coordinate)
+        dismiss()
     }
 }
 
