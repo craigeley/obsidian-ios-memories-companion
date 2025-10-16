@@ -688,11 +688,13 @@ struct LocationPickerView: View {
 struct NoteEditorView: View {
     @Binding var noteText: String
     @Environment(\.dismiss) var dismiss
+    @FocusState private var isTextEditorFocused: Bool
 
     var body: some View {
         NavigationView {
             VStack {
                 TextEditor(text: $noteText)
+                    .focused($isTextEditorFocused)
                     .padding()
                     .font(.body)
             }
@@ -709,6 +711,9 @@ struct NoteEditorView: View {
                         dismiss()
                     }
                 }
+            }
+            .onAppear {
+                isTextEditorFocused = true
             }
         }
     }
