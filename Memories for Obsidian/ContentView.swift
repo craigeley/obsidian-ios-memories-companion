@@ -637,6 +637,8 @@ struct LocationPickerView: View {
     @State private var searchResults: [IdentifiableMapItem] = []
     @State private var region: MKCoordinateRegion
     @State private var currentLocationItem: IdentifiableMapItem?
+    @State private var showSearchView = false
+    @FocusState private var isSearchFocused: Bool
 
     init(selectedLocation: Binding<CLLocationCoordinate2D?>, selectedPlaceName: Binding<String?>, currentLocation: CLLocation?) {
         self._selectedLocation = selectedLocation
@@ -675,7 +677,24 @@ struct LocationPickerView: View {
 
     var body: some View {
         NavigationView {
-            VStack {
+            VStack(spacing: 0) {
+                // Search button that opens full-screen search
+                Button(action: {
+                    showSearchView = true
+                }) {
+                    HStack {
+                        Image(systemName: "magnifyingglass")
+                            .foregroundColor(.secondary)
+                        Text("Search for a place")
+                            .foregroundColor(.secondary)
+                        Spacer()
+                    }
+                    .padding()
+                    .background(Color(UIColor.systemGray6))
+                    .cornerRadius(10)
+                }
+                .padding()
+
                 Map(position: .constant(.region(region))) {
                     // Show user's current location
                     if let location = currentLocation {
@@ -738,32 +757,6 @@ struct LocationPickerView: View {
                             }
                         }
                     }
-
-                    // Show search results
-                    if !searchResults.isEmpty {
-                        Section(header: Text("Search Results")) {
-                            ForEach(searchResults) { item in
-                                Button(action: {
-                                    selectLocation(coordinate: item.mapItem.placemark.coordinate, name: item.mapItem.name ?? "Unknown")
-                                }) {
-                                    VStack(alignment: .leading) {
-                                        Text(item.mapItem.name ?? "Unknown")
-                                            .font(.headline)
-                                        if let address = item.mapItem.placemark.title {
-                                            Text(address)
-                                                .font(.caption)
-                                                .foregroundColor(.secondary)
-                                        }
-                                    }
-                                }
-                                .foregroundColor(.primary)
-                            }
-                        }
-                    }
-                }
-                .searchable(text: $searchText, prompt: "Search for a place")
-                .onChange(of: searchText) { oldValue, newValue in
-                    searchPlaces(query: newValue)
                 }
             }
             .navigationTitle("Choose Location")
@@ -773,6 +766,24 @@ struct LocationPickerView: View {
                     Button("Cancel") {
                         dismiss()
                     }
+                }
+            }
+            .sheet(isPresented: $showSearchView) {
+                LocationSearchView(
+                    searchText: $searchText,
+                    searchResults: $searchResults,
+                    region: $region,
+                    onSelectLocation: { coordinate, name in
+                        selectLocation(coordinate: coordinate, name: name)
+                        showSearchView = false
+                    }
+                )
+            }
+            .onChange(of: showSearchView) { oldValue, newValue in
+                // Clear search when sheet is dismissed
+                if !newValue {
+                    searchText = ""
+                    searchResults = []
                 }
             }
             .onAppear {
@@ -836,6 +847,87 @@ struct LocationPickerView: View {
         selectedPlaceName = name
         savedLocationsManager.saveLocation(name: name, coordinate: coordinate)
         dismiss()
+    }
+}
+
+struct LocationSearchView: View {
+    @Binding var searchText: String
+    @Binding var searchResults: [IdentifiableMapItem]
+    @Binding var region: MKCoordinateRegion
+    let onSelectLocation: (CLLocationCoordinate2D, String) -> Void
+    @Environment(\.dismiss) var dismiss
+    @State private var isSearchPresented = false
+
+    var body: some View {
+        NavigationView {
+            List {
+                if searchResults.isEmpty && !searchText.isEmpty {
+                    Section {
+                        HStack {
+                            Spacer()
+                            Text("No results found")
+                                .foregroundColor(.secondary)
+                            Spacer()
+                        }
+                    }
+                } else {
+                    ForEach(searchResults) { item in
+                        Button(action: {
+                            onSelectLocation(item.mapItem.placemark.coordinate, item.mapItem.name ?? "Unknown")
+                        }) {
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text(item.mapItem.name ?? "Unknown")
+                                    .font(.headline)
+                                if let address = item.mapItem.placemark.title {
+                                    Text(address)
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                }
+                            }
+                            .padding(.vertical, 4)
+                        }
+                        .foregroundColor(.primary)
+                    }
+                }
+            }
+            .searchable(text: $searchText, isPresented: $isSearchPresented, prompt: "Search for a place")
+            .textInputAutocapitalization(.never)
+            .autocorrectionDisabled()
+            .navigationTitle("Search")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") {
+                        dismiss()
+                    }
+                }
+            }
+            .onChange(of: searchText) { oldValue, newValue in
+                searchPlaces(query: newValue)
+            }
+            .onAppear {
+                // Activate search field when view appears
+                isSearchPresented = true
+            }
+        }
+    }
+
+    private func searchPlaces(query: String) {
+        guard !query.isEmpty else {
+            searchResults = []
+            return
+        }
+
+        let request = MKLocalSearch.Request()
+        request.naturalLanguageQuery = query
+        request.region = region
+
+        let search = MKLocalSearch(request: request)
+        search.start { response, error in
+            if let response = response {
+                searchResults = response.mapItems.map { IdentifiableMapItem(mapItem: $0) }
+            }
+        }
     }
 }
 
